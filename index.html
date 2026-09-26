@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>赛博试轴器 · AI 接口可用性测试</title>
+    <style>
+        :root {
+            --bg: #f9f7f4;
+            --card: #ffffff;
+            --card2: #faf9f6;
+            --line: #ebe6de;
+            --line2: #ddd7cc;
+            --text: #29261f;
+            --text2: #4a463f;
+            --muted: #7a756e;
+            --dim: #a8a29a;
+            --accent: #d46a4a;
+            --accent-hover: #c15a3a;
+            --accent-soft: #faf0eb;
+            --ok: #5b8c5a;
+            --err: #c75c5c;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 15px;
+            line-height: 1.6;
+            font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #app {
+            flex: 1;
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .page {
+            display: none;
+            padding: 12px 0 48px;
+        }
+
+            .page.active {
+                display: block;
+            }
+
+        /* ---------- home ---------- */
+        .home {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 170px);
+            text-align: center;
+            padding: 20px 0;
+        }
+
+            .home .logo {
+                width: 60px;
+                height: 60px;
+                border-radius: 16px;
+                display: grid;
+                place-items: center;
+                font-size: 26px;
+                background: var(--card);
+                border: 1px solid var(--line);
+                box-shadow: 0 2px 12px -4px rgba(40,35,25,.06);
+            }
+
+            .home h1 {
+                font-size: 26px;
+                margin: 18px 0 8px;
+                letter-spacing: 1px;
+                font-weight: 600;
+                color: var(--text);
+            }
+
+            .home .sub {
+                color: var(--muted);
+                margin: 0 0 32px;
+                font-size: 13.5px;
+                font-weight: 400;
+            }
+
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        @media(max-width:520px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .nav-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 22px 20px;
+            color: var(--text);
+            cursor: pointer;
+            text-align: left;
+            font: inherit;
+            transition: border-color .15s,box-shadow .15s,transform .15s;
+            box-shadow: 0 1px 3px -1px rgba(40,35,25,.03);
+        }
+
+            .nav-card:hover {
+                border-color: var(--line2);
+                box-shadow: 0 4px 14px -6px rgba(40,35,25,.1);
+            }
+
+            .nav-card .ico {
+                font-size: 22px;
+                line-height: 1;
+            }
+
+            .nav-card h3 {
+                margin: 12px 0 5px;
+                font-size: 15px;
+                font-weight: 600;
+            }
+
+            .nav-card p {
+                margin: 0;
+                font-size: 12.5px;
+                color: var(--muted);
+                line-height: 1.55;
+            }
+
+        /* ---------- topbar ---------- */
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 22px 0 18px;
+        }
+
+            .topbar h2 {
+                margin: 0;
+                font-size: 17px;
+                font-weight: 600;
+                letter-spacing: .2px;
+            }
+
+        .back {
+            background: var(--card);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            border-radius: 9px;
+            padding: 7px 13px;
+            font: inherit;
+            font-size: 12.5px;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+            .back:hover {
+                color: var(--text);
+                border-color: var(--line2);
+            }
+
+        /* ---------- panel ---------- */
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 1px 3px -1px rgba(40,35,25,.03);
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+            .field:last-child {
+                margin-bottom: 0;
+            }
+
+            .field > label {
+                display: block;
+                font-size: 12.5px;
+                color: var(--text2);
+                margin-bottom: 7px;
+                font-weight: 500;
+                letter-spacing: .1px;
+            }
+
+        input[type=text], input[type=password], input[type=number], textarea {
+            width: 100%;
+            background: var(--card2);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            color: var(--text);
+            padding: 10px 13px;
+            font: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color .15s,background .15s;
+        }
+
+            input::placeholder, textarea::placeholder {
+                color: var(--dim);
+            }
+
+            input:focus, textarea:focus {
+                border-color: var(--accent);
+                background: #fff;
+            }
+
+        textarea {
+            resize: vertical;
+            min-height: 76px;
+            line-height: 1.6;
+        }
+
+        .hint {
+            font-size: 11.5px;
+            color: var(--dim);
+            margin-top: 6px;
+            line-height: 1.55;
+        }
+
+        .seg {
+            display: flex;
+            background: var(--card2);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 3px;
+            gap: 3px;
+        }
+
+        .seg-btn {
+            flex: 1;
+            background: transparent;
+            border: 0;
+            color: var(--muted);
+            padding: 8px 6px;
+            border-radius: 7px;
+            cursor: pointer;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            transition: .15s;
+            white-space: nowrap;
+        }
+
+            .seg-btn.active {
+                background: #fff;
+                color: var(--text);
+                box-shadow: 0 1px 3px -1px rgba(40,35,25,.08);
+            }
+
+            .seg-btn:not(.active):hover {
+                color: var(--text2);
+            }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 22px;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+            .btn.primary {
+                background: var(--accent);
+                color: #fff;
+            }
+
+                .btn.primary:hover {
+                    background: var(--accent-hover);
+                }
+
+                .btn.primary:disabled {
+                    opacity: .55;
+                    cursor: not-allowed;
+                }
+
+        .hint-inline {
+            font-size: 12px;
+            color: var(--dim);
+        }
+
+        /* ---------- result ---------- */
+        .result {
+            margin-top: 16px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 1px 3px -1px rgba(40,35,25,.03);
+        }
+
+        .result-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            font-size: 11.5px;
+            padding: 3px 11px;
+            border-radius: 999px;
+            font-weight: 500;
+            letter-spacing: .2px;
+        }
+
+            .badge.ok {
+                background: #eef3ed;
+                color: var(--ok);
+                border: 1px solid #d9e5d7;
+            }
+
+            .badge.error {
+                background: #f7ecec;
+                color: var(--err);
+                border: 1px solid #ecd5d5;
+            }
+
+            .badge.pending {
+                background: var(--accent-soft);
+                color: var(--accent);
+                border: 1px solid #f0dbd2;
+            }
+
+        .ms {
+            margin-left: auto;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: var(--text2);
+            font-size: 13px;
+        }
+
+        .reply {
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: var(--card2);
+            border-radius: 10px;
+            padding: 13px 15px;
+            font-size: 14px;
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+
+        .err {
+            color: var(--err);
+            font-size: 13.5px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        pre.raw {
+            background: var(--card2);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 11px 13px;
+            overflow: auto;
+            max-height: 260px;
+            font-size: 12px;
+            color: var(--text2);
+            margin: 10px 0 0;
+            font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+        }
+
+        details {
+            margin-top: 12px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-size: 12.5px;
+            color: var(--dim);
+            user-select: none;
+            outline: none;
+        }
+
+            summary:hover {
+                color: var(--muted);
+            }
+
+        audio {
+            width: 100%;
+            margin-top: 14px;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .loading {
+            color: var(--muted);
+            font-size: 13.5px;
+        }
+
+            .loading::after {
+                content: '';
+                display: inline-block;
+                width: 1em;
+                text-align: left;
+                animation: dots 1.2s steps(4,end) infinite;
+            }
+
+        @keyframes dots {
+            0% {
+                content: ''
+            }
+
+            25% {
+                content: '.'
+            }
+
+            50% {
+                content: '..'
+            }
+
+            75% {
+                content: '...'
+            }
+        }
+
+        /* ---------- footer ---------- */
+        footer {
+            text-align: center;
+            padding: 30px 20px 34px;
+            color: var(--dim);
+            font-size: 12.5px;
+            border-top: 1px solid var(--line);
+            margin-top: 24px;
+        }
+
+            footer .line {
+                display: flex;
+                gap: 8px 22px;
+                justify-content: center;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+
+            footer a {
+                color: var(--muted);
+                text-decoration: none;
+                transition: color .15s;
+            }
+
+                footer a:hover {
+                    color: var(--accent);
+                }
+
+            footer .gh-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+                footer .gh-link svg {
+                    width: 14px;
+                    height: 14px;
+                    fill: currentColor;
+                    transition: fill .15s;
+                }
+
+                footer .gh-link:hover svg {
+                    fill: var(--accent);
+                }
+    </style>
+</head>
+<body>
+
+    <main id="app">
+
+        <section id="page-home" class="page">
+            <div class="home">
+                <div class="logo">⚡</div>
+                <h1>赛博试轴器</h1>
+                <p class="sub">AI 接口可用性快速测试 · 配置仅保存在你的浏览器本地</p>
+                <div class="cards">
+                    <button class="nav-card" data-go="chat">
+                        <div class="ico">💬</div>
+                        <h3>对话型 AI</h3>
+                        <p>OpenAI / Anthropic 协议<br>自动发送「你好」测连通</p>
+                    </button>
+                    <button class="nav-card" data-go="tts">
+                        <div class="ico">🔊</div>
+                        <h3>TTS 语音合成</h3>
+                        <p>OpenAI 协议 / 小米 MiMo / 阿里云<br>输入文本即刻试听</p>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-chat" class="page">
+            <div class="topbar">
+                <button class="back" data-go="home">← 返回</button>
+                <h2>对话型 AI 测试</h2>
+            </div>
+
+            <div class="panel">
+                <div class="field">
+                    <label>协议</label>
+                    <div class="seg" id="chat-protocol">
+                        <button class="seg-btn active" data-val="openai">OpenAI 协议</button>
+                        <button class="seg-btn" data-val="anthropic">Anthropic 协议</button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>接口地址</label>
+                    <input type="text" id="chat-baseUrl" data-store="chat.baseUrl"
+                           placeholder="https://api.openai.com/v1" spellcheck="false" autocomplete="off">
+                    <div class="hint">填到版本目录即可，程序会自动补全 /chat/completions 或 /v1/messages</div>
+                </div>
+
+                <div class="field">
+                    <label>API Key</label>
+                    <input type="password" id="chat-apiKey" data-store="chat.apiKey"
+                           placeholder="sk-... （本地接口可留空）" autocomplete="off">
+                </div>
+
+                <div class="field">
+                    <label>模型名</label>
+                    <input type="text" id="chat-model" data-store="chat.model"
+                           placeholder="gpt-4o-mini" spellcheck="false" autocomplete="off">
+                </div>
+
+                <div class="actions">
+                    <button class="btn primary" id="chat-run">开始测试</button>
+                    <span class="hint-inline">将发送一条内容为「你好」的消息</span>
+                </div>
+            </div>
+
+            <div class="result" id="chat-result" hidden>
+                <div class="result-head">
+                    <span class="badge" id="chat-status"></span>
+                    <span class="ms" id="chat-ms"></span>
+                </div>
+                <div id="chat-body"></div>
+            </div>
+        </section>
+
+        <section id="page-tts" class="page">
+            <div class="topbar">
+                <button class="back" data-go="home">← 返回</button>
+                <h2>TTS 语音合成测试</h2>
+            </div>
+
+            <div class="panel">
+                <div class="field">
+                    <label>协议</label>
+                    <div class="seg" id="tts-protocol">
+                        <button class="seg-btn active" data-val="openai">OpenAI 协议</button>
+                        <button class="seg-btn" data-val="mimo">小米 MiMo</button>
+                        <button class="seg-btn" data-val="aliyun">阿里云</button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>接口地址</label>
+                    <input type="text" id="tts-baseUrl" data-store="tts.baseUrl"
+                           placeholder="https://api.openai.com/v1" spellcheck="false" autocomplete="off">
+                    <div class="hint" id="tts-url-hint">填到版本目录即可，程序会自动补全 /audio/speech</div>
+                </div>
+
+                <div class="field">
+                    <label>API Key</label>
+                    <input type="password" id="tts-apiKey" data-store="tts.apiKey"
+                           placeholder="sk-... （本地接口可留空）" autocomplete="off">
+                </div>
+
+                <div class="field">
+                    <label>模型名</label>
+                    <input type="text" id="tts-model" data-store="tts.model"
+                           placeholder="tts-1" spellcheck="false" autocomplete="off">
+                </div>
+
+                <div class="field">
+                    <label>音色 (Voice)</label>
+                    <input type="text" id="tts-voice" data-store="tts.voice"
+                           placeholder="alloy / Cherry / mimo_default" spellcheck="false" autocomplete="off">
+                    <div class="hint">支持手动输入，切换协议时也会自动填入推荐的默认音色</div>
+                </div>
+
+                <div class="field" id="tts-speed-field">
+                    <label>倍速（0.5 - 2）</label>
+                    <input type="number" id="tts-speed" data-store="tts.speed"
+                           min="0.5" max="2" step="0.1" value="1">
+                </div>
+
+                <div class="field" id="tts-style-field" hidden>
+                    <label>朗读风格指令</label>
+                    <textarea id="tts-style" data-store="tts.style"
+                              placeholder="例如：用温柔、缓慢、轻声细语的语调朗读"></textarea>
+                    <div class="hint">该指令会作为 user message 内容的一部分发送给小米 MiMo</div>
+                </div>
+
+                <div class="field">
+                    <label>朗读文本</label>
+                    <textarea id="tts-text" data-store="tts.text">你好，我是赛博试轴器，今天也愿意听你说说。</textarea>
+                </div>
+
+                <div class="actions">
+                    <button class="btn primary" id="tts-run">合成并试听</button>
+                </div>
+            </div>
+
+            <div class="result" id="tts-result" hidden>
+                <div class="result-head">
+                    <span class="badge" id="tts-status"></span>
+                    <span class="ms" id="tts-ms"></span>
+                </div>
+                <div id="tts-body"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="line">
+            <span>Made by <a href="https://mykuxin.com" target="_blank" rel="noopener">kuxin</a></span>
+            <span class="gh-link">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 2a14 14 0 00-4.43 27.28c.7.13 1-.3 1-.67v-2.38c-3.89.84-4.71-1.88-4.71-1.88a3.71 3.71 0 00-1.62-2.05c-1.27-.86.1-.85.1-.85a2.94 2.94 0 012.14 1.45 3 3 0 004.08 1.16 2.93 2.93 0 01.88-1.87c-3.1-.36-6.37-1.56-6.37-6.92a5.4 5.4 0 011.44-3.76 5 5 0 01.14-3.7s1.17-.38 3.85 1.43a13.3 13.3 0 017 0c2.67-1.81 3.84-1.43 3.84-1.43a5 5 0 01.14 3.7 5.4 5.4 0 011.44 3.76c0 5.38-3.27 6.56-6.39 6.91a3.33 3.33 0 01.95 2.59v3.84c0 .46.25.81 1 .67A14 14 0 0016 2Z" /></svg>
+                <a href="https://github.com/kuxinCN" target="_blank" rel="noopener">kuxinCN</a>
+            </span>
+        </div>
+    </footer>
+
+    <script>
+(function () {
+  'use strict';
+
+  const $ = (sel) => document.querySelector(sel);
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+
+  function buildUrl(base, endpoint) {
+    let b = (base || '').trim().replace(/\/+$/, '');
+    if (!b) return '';
+    if (b.endsWith(endpoint)) return b;
+    if (/\/v\d+$/.test(b)) return b + endpoint;
+    return b + '/v1' + endpoint;
+  }
+
+  const ROUTES = ['home', 'chat', 'tts'];
+
+  function currentRoute() {
+    const h = location.hash.replace(/^#\/?/, '');
+    return ROUTES.indexOf(h) >= 0 ? h : 'home';
+  }
+
+  function applyRoute() {
+    const r = currentRoute();
+    document.querySelectorAll('.page').forEach((p) => {
+      p.classList.toggle('active', p.id === 'page-' + r);
+    });
+    window.scrollTo({ top: 0 });
+  }
+
+  document.addEventListener('click', (e) => {
+    const go = e.target.closest('[data-go]');
+    if (go) {
+      const r = go.dataset.go;
+      location.hash = r === 'home' ? '#/' : '#/' + r;
+    }
+  });
+  window.addEventListener('hashchange', applyRoute);
+
+  const PREFIX = 'saibo.';
+
+  function bindStore() {
+    document.querySelectorAll('[data-store]').forEach((el) => {
+      const key = PREFIX + el.dataset.store;
+      const saved = localStorage.getItem(key);
+      if (saved !== null) el.value = saved;
+      const save = () => localStorage.setItem(key, el.value);
+      el.addEventListener('input', save);
+      el.addEventListener('change', save);
+    });
+  }
+
+  function persist(el) {
+    if (el && el.dataset.store) {
+      localStorage.setItem(PREFIX + el.dataset.store, el.value);
+    }
+  }
+
+  function initSeg(el, onChange) {
+    el.addEventListener('click', (e) => {
+      const btn = e.target.closest('.seg-btn');
+      if (!btn) return;
+      Array.prototype.forEach.call(el.children, (c) => {
+        c.classList.toggle('active', c === btn);
+      });
+      onChange(btn.dataset.val);
+    });
+  }
+
+  function setSeg(el, val) {
+    Array.prototype.forEach.call(el.children, (c) => {
+      c.classList.toggle('active', c.dataset.val === val);
+    });
+  }
+
+  const $chatProtocol = $('#chat-protocol');
+  const $chatBaseUrl = $('#chat-baseUrl');
+  const $chatApiKey = $('#chat-apiKey');
+  const $chatModel = $('#chat-model');
+  const $chatRun = $('#chat-run');
+  const $chatResult = $('#chat-result');
+  const $chatStatus = $('#chat-status');
+  const $chatMs = $('#chat-ms');
+  const $chatBody = $('#chat-body');
+
+  const $ttsProtocol = $('#tts-protocol');
+  const $ttsBaseUrl = $('#tts-baseUrl');
+  const $ttsApiKey = $('#tts-apiKey');
+  const $ttsModel = $('#tts-model');
+  const $ttsVoice = $('#tts-voice');
+  const $ttsSpeed = $('#tts-speed');
+  const $ttsStyle = $('#tts-style');
+  const $ttsText = $('#tts-text');
+  const $ttsRun = $('#tts-run');
+  const $ttsResult = $('#tts-result');
+  const $ttsStatus = $('#tts-status');
+  const $ttsMs = $('#tts-ms');
+  const $ttsBody = $('#tts-body');
+  const $ttsSpeedField = $('#tts-speed-field');
+  const $ttsStyleField = $('#tts-style-field');
+  const $ttsUrlHint = $('#tts-url-hint');
+
+  const CHAT_PRESETS = {
+    openai:    { baseUrl: 'https://api.openai.com/v1',        model: 'gpt-4o-mini' },
+    anthropic: { baseUrl: 'https://api.anthropic.com',        model: 'claude-3-5-haiku-20241022' }
+  };
+
+  const TTS_PRESETS = {
+    openai: { baseUrl: 'https://api.openai.com/v1',  model: 'tts-1',           voice: 'alloy',       hint: '程序会自动补全 /audio/speech，音频以二进制返回' },
+    mimo:   { baseUrl: 'https://api.xiaomimimo.com/v1', model: 'mimo-v2.5-tts', voice: 'mimo_default', hint: '走 /chat/completions，音频以 base64 放在 JSON 里返回' },
+    aliyun: { baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-tts', voice: 'Cherry', hint: '阿里云百炼兼容模式，程序会自动补全 /audio/speech' }
+  };
+
+  const ALL_TTS_PRESET_VALUES = (function () {
+    const set = new Set();
+    Object.keys(TTS_PRESETS).forEach((k) => {
+      const p = TTS_PRESETS[k];
+      set.add(p.baseUrl); set.add(p.model); set.add(p.voice);
+    });
+    return set;
+  })();
+
+  const ALL_CHAT_PRESET_VALUES = (function () {
+    const set = new Set();
+    Object.keys(CHAT_PRESETS).forEach((k) => {
+      const p = CHAT_PRESETS[k];
+      set.add(p.baseUrl); set.add(p.model);
+    });
+    return set;
+  })();
+
+  function autofill(el, value, presetPool) {
+    const cur = (el.value || '').trim();
+    if (!cur || presetPool.has(cur)) {
+      el.value = value;
+      persist(el);
+    }
+  }
+
+  let chatProtocolValue = localStorage.getItem(PREFIX + 'chat.protocol') || 'openai';
+
+  function applyChatPreset(protocol) {
+    const p = CHAT_PRESETS[protocol];
+    if (!p) return;
+    autofill($chatBaseUrl, p.baseUrl, ALL_CHAT_PRESET_VALUES);
+    autofill($chatModel, p.model, ALL_CHAT_PRESET_VALUES);
+  }
+
+  initSeg($chatProtocol, (val) => {
+    chatProtocolValue = val;
+    localStorage.setItem(PREFIX + 'chat.protocol', val);
+    applyChatPreset(val);
+  });
+
+  function setChatStatus(type, text) {
+    $chatStatus.className = 'badge ' + type;
+    $chatStatus.textContent = text;
+  }
+
+  async function runChatTest() {
+    const protocol = chatProtocolValue;
+    const baseUrl = $chatBaseUrl.value.trim();
+    const apiKey = $chatApiKey.value.trim();
+    const model = $chatModel.value.trim();
+
+    $chatResult.hidden = false;
+
+    if (!baseUrl) {
+      setChatStatus('error', '参数缺失');
+      $chatMs.textContent = '0 ms';
+      $chatBody.innerHTML = '<div class="err">请先填写接口地址</div>';
+      return;
+    }
+    if (!model) {
+      setChatStatus('error', '参数缺失');
+      $chatMs.textContent = '0 ms';
+      $chatBody.innerHTML = '<div class="err">请先填写模型名</div>';
+      return;
+    }
+
+    $chatRun.disabled = true;
+    $chatRun.textContent = '测试中…';
+    setChatStatus('pending', '请求中');
+    $chatMs.textContent = '';
+    $chatBody.innerHTML = '<div class="loading">正在等待响应</div>';
+
+    const t0 = performance.now();
+
+    try {
+      let url, headers, payload;
+
+      if (protocol === 'anthropic') {
+        url = buildUrl(baseUrl, '/messages');
+        headers = {
+          'content-type': 'application/json',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        };
+        if (apiKey) headers['x-api-key'] = apiKey;
+        payload = {
+          model,
+          max_tokens: 1024,
+          messages: [{ role: 'user', content: '你好' }]
+        };
+      } else {
+        url = buildUrl(baseUrl, '/chat/completions');
+        headers = { 'content-type': 'application/json' };
+        if (apiKey) headers['authorization'] = 'Bearer ' + apiKey;
+        payload = {
+          model,
+          messages: [{ role: 'user', content: '你好' }]
+        };
+      }
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      const rawText = await res.text();
+      const ms = Math.round(performance.now() - t0);
+      $chatMs.textContent = ms + ' ms';
+
+      let data = null;
+      try { data = JSON.parse(rawText); } catch (e) {}
+
+      if (!res.ok) {
+        setChatStatus('error', 'HTTP ' + res.status);
+        $chatBody.innerHTML =
+          '<div class="err">请求失败（HTTP ' + res.status + '）</div>' +
+          '<pre class="raw">' + escapeHtml((rawText || '').slice(0, 4000)) + '</pre>';
+        return;
+      }
+
+      let reply = '';
+      if (data) {
+        if (protocol === 'anthropic') {
+          if (Array.isArray(data.content)) {
+            reply = data.content
+              .filter((b) => b && b.type === 'text')
+              .map((b) => b.text || '')
+              .join('\n');
+          }
+        } else {
+          const msg = data.choices && data.choices[0] && data.choices[0].message;
+          if (msg) {
+            if (typeof msg.content === 'string') {
+              reply = msg.content;
+            } else if (Array.isArray(msg.content)) {
+              reply = msg.content.map((p) => (p && p.text) || '').join('');
+            }
+          }
+        }
+      }
+
+      if (!reply) reply = '（接口返回成功，但未解析到文本内容）';
+
+      setChatStatus('ok', 'HTTP ' + res.status + ' · 可用');
+      $chatBody.innerHTML =
+        '<div class="reply">' + escapeHtml(reply) + '</div>' +
+        '<details><summary>查看原始返回</summary><pre class="raw">' +
+        escapeHtml((rawText || '').slice(0, 6000)) + '</pre></details>';
+
+    } catch (err) {
+      const ms = Math.round(performance.now() - t0);
+      $chatMs.textContent = ms + ' ms';
+      setChatStatus('error', '请求异常');
+      $chatBody.innerHTML =
+        '<div class="err">' + escapeHtml((err && err.message) || String(err)) + '</div>' +
+        '<div class="hint">常见原因：地址填写错误、网络不通、浏览器 CORS 跨域限制、API Key 无效。</div>';
+    } finally {
+      $chatRun.disabled = false;
+      $chatRun.textContent = '开始测试';
+    }
+  }
+
+  $chatRun.addEventListener('click', runChatTest);
+
+  function sniffBase64Mime(s) {
+    const head = s.slice(0, 8);
+    if (head.indexOf('UklGR') === 0) return 'audio/wav';
+    if (head.indexOf('T2dnUw') === 0) return 'audio/ogg';
+    if (head.indexOf('ZkxhQw') === 0) return 'audio/flac';
+    if (head.indexOf('SUQz') === 0) return 'audio/mpeg';
+    return 'audio/mpeg';
+  }
+
+  function sniffBufferMime(buf) {
+    const b = new Uint8Array(buf.slice(0, 12));
+    const ascii = String.fromCharCode.apply(null, Array.prototype.slice.call(b, 0, 4));
+    if (ascii === 'RIFF') return 'audio/wav';
+    if (ascii === 'OggS') return 'audio/ogg';
+    if (ascii === 'fLaC') return 'audio/flac';
+    if (ascii === 'ID3' || (b[0] === 0xFF && (b[1] & 0xE0) === 0xE0)) return 'audio/mpeg';
+    return 'audio/mpeg';
+  }
+
+  function b64ToBlob(b64, mime) {
+    const clean = String(b64).replace(/\s+/g, '');
+    const bin = atob(clean);
+    const len = bin.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+    return new Blob([bytes], { type: mime || 'audio/mpeg' });
+  }
+
+  function dataUrlToBlob(dataUrl) {
+    const idx = dataUrl.indexOf(',');
+    const meta = dataUrl.slice(0, idx);
+    const b64 = dataUrl.slice(idx + 1);
+    const m = meta.match(/data:([^;]+)/);
+    return b64ToBlob(b64, (m && m[1]) || 'audio/mpeg');
+  }
+
+  function extractAudio(node, hint, depth) {
+    hint = hint || '';
+    depth = depth || 0;
+    if (depth > 8 || node === null || node === undefined) return null;
+
+    if (typeof node === 'string') {
+      const s = node.trim();
+      if (s.indexOf('data:audio/') === 0) {
+        return { kind: 'dataurl', value: s };
+      }
+      if (/^https?:\/\/\S+\.(mp3|wav|ogg|m4a|aac|flac|pcm|opus)(\?\S*)?$/i.test(s)) {
+        return { kind: 'url', value: s };
+      }
+      if (s.length > 256 && /^[A-Za-z0-9+/=\r\n]+$/.test(s)) {
+        return { kind: 'base64', value: s.replace(/\s+/g, ''), mime: sniffBase64Mime(s) };
+      }
+      return null;
+    }
+
+    if (Object.prototype.toString.call(node) === '[object Array]') {
+      for (let i = 0; i < node.length; i++) {
+        const r = extractAudio(node[i], hint, depth + 1);
+        if (r) return r;
+      }
+      return null;
+    }
+
+    if (typeof node === 'object') {
+      const keys = Object.keys(node);
+      const pri = keys.filter((k) => /audio|voice|speech|sound|base64|data/i.test(k));
+      const rest = keys.filter((k) => pri.indexOf(k) < 0);
+      const ordered = pri.concat(rest);
+      for (let i = 0; i < ordered.length; i++) {
+        const k = ordered[i];
+        const r = extractAudio(node[k], k, depth + 1);
+        if (r) return r;
+      }
+    }
+    return null;
+  }
+
+  let ttsProtocolValue = localStorage.getItem(PREFIX + 'tts.protocol') || 'openai';
+  let currentAudioObjectUrl = null;
+
+  function applyTtsProtocolUI(protocol) {
+    const p = TTS_PRESETS[protocol];
+    if (!p) return;
+
+    $ttsSpeedField.hidden = protocol !== 'openai';
+    $ttsStyleField.hidden = protocol !== 'mimo';
+
+    $ttsUrlHint.textContent = p.hint;
+
+    autofill($ttsBaseUrl, p.baseUrl, ALL_TTS_PRESET_VALUES);
+    autofill($ttsModel, p.model, ALL_TTS_PRESET_VALUES);
+    autofill($ttsVoice, p.voice, ALL_TTS_PRESET_VALUES);
+  }
+
+  initSeg($ttsProtocol, (val) => {
+    ttsProtocolValue = val;
+    localStorage.setItem(PREFIX + 'tts.protocol', val);
+    applyTtsProtocolUI(val);
+  });
+
+  function setTtsStatus(type, text) {
+    $ttsStatus.className = 'badge ' + type;
+    $ttsStatus.textContent = text;
+  }
+
+  function releaseAudio() {
+    if (currentAudioObjectUrl) {
+      try { URL.revokeObjectURL(currentAudioObjectUrl); } catch (e) {}
+      currentAudioObjectUrl = null;
+    }
+  }
+
+  async function runTtsTest() {
+    const protocol = ttsProtocolValue;
+    const baseUrl = $ttsBaseUrl.value.trim();
+    const apiKey = $ttsApiKey.value.trim();
+    const model = $ttsModel.value.trim();
+    const voice = $ttsVoice.value.trim();
+    const text = $ttsText.value.trim();
+    const speed = parseFloat($ttsSpeed.value);
+    const style = $ttsStyle.value.trim();
+
+    $ttsResult.hidden = false;
+
+    const fail = (msg) => {
+      setTtsStatus('error', '参数缺失');
+      $ttsMs.textContent = '0 ms';
+      $ttsBody.innerHTML = '<div class="err">' + escapeHtml(msg) + '</div>';
+    };
+
+    if (!baseUrl) return fail('请先填写接口地址');
+    if (!model)   return fail('请先填写模型名');
+    if (!text)    return fail('请先填写要朗读的文本');
+
+    releaseAudio();
+    $ttsRun.disabled = true;
+    $ttsRun.textContent = '合成中…';
+    setTtsStatus('pending', '请求中');
+    $ttsMs.textContent = '';
+    $ttsBody.innerHTML = '<div class="loading">正在合成语音</div>';
+
+    const t0 = performance.now();
+
+    try {
+      let url, headers, payload;
+
+      if (protocol === 'mimo') {
+        url = buildUrl(baseUrl, '/chat/completions');
+        headers = { 'content-type': 'application/json' };
+        if (apiKey) headers['authorization'] = 'Bearer ' + apiKey;
+        const content = style ? (style + '：' + text) : text;
+        payload = {
+          model,
+          messages: [{ role: 'user', content: content }]
+        };
+      } else if (protocol === 'aliyun') {
+        url = buildUrl(baseUrl, '/audio/speech');
+        headers = { 'content-type': 'application/json' };
+        if (apiKey) headers['authorization'] = 'Bearer ' + apiKey;
+        payload = {
+          model,
+          input: text,
+          voice: voice || 'Cherry',
+          response_format: 'mp3'
+        };
+      } else {
+        url = buildUrl(baseUrl, '/audio/speech');
+        headers = { 'content-type': 'application/json' };
+        if (apiKey) headers['authorization'] = 'Bearer ' + apiKey;
+        payload = {
+          model,
+          input: text,
+          voice: voice || 'alloy',
+          response_format: 'mp3',
+          speed: isFinite(speed) ? speed : 1
+        };
+      }
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      const ct = (res.headers.get('content-type') || '').toLowerCase();
+      const buf = await res.arrayBuffer();
+      const ms = Math.round(performance.now() - t0);
+      $ttsMs.textContent = ms + ' ms';
+
+      if (!res.ok) {
+        const txt = new TextDecoder('utf-8').decode(buf);
+        setTtsStatus('error', 'HTTP ' + res.status);
+        $ttsBody.innerHTML =
+          '<div class="err">请求失败（HTTP ' + res.status + '）</div>' +
+          '<pre class="raw">' + escapeHtml(txt.slice(0, 4000)) + '</pre>';
+        return;
+      }
+
+      let headByte = '';
+      try { headByte = new TextDecoder('utf-8').decode(buf.slice(0, 1)); } catch (e) {}
+      const looksJson = ct.indexOf('json') >= 0 || headByte === '{' || headByte === '[';
+
+      let audioSrc = null;
+      let rawInfo = '';
+
+      if (looksJson) {
+        let data = null;
+        try {
+          data = JSON.parse(new TextDecoder('utf-8').decode(buf));
+        } catch (e) {
+          setTtsStatus('error', '解析失败');
+          $ttsBody.innerHTML = '<div class="err">返回内容不是合法的 JSON</div>';
+          return;
+        }
+
+        rawInfo = JSON.stringify(data, null, 2);
+
+        const found = extractAudio(data, '');
+        if (!found) {
+          setTtsStatus('error', '未找到音频');
+          $ttsBody.innerHTML =
+            '<div class="err">接口返回成功，但没有在响应里找到音频数据</div>' +
+            '<pre class="raw">' + escapeHtml(rawInfo.slice(0, 4000)) + '</pre>';
+          return;
+        }
+
+        if (found.kind === 'url') {
+          audioSrc = found.value;
+        } else if (found.kind === 'dataurl') {
+          const blob = dataUrlToBlob(found.value);
+          audioSrc = URL.createObjectURL(blob);
+          currentAudioObjectUrl = audioSrc;
+        } else {
+          const blob = b64ToBlob(found.value, found.mime);
+          audioSrc = URL.createObjectURL(blob);
+          currentAudioObjectUrl = audioSrc;
+        }
+      } else {
+        const mime = (ct && ct.indexOf('application/octet-stream') < 0)
+          ? ct.split(';')[0]
+          : sniffBufferMime(buf);
+        const blob = new Blob([buf], { type: mime || 'audio/mpeg' });
+        audioSrc = URL.createObjectURL(blob);
+        currentAudioObjectUrl = audioSrc;
+        rawInfo = 'Content-Type: ' + (ct || '(none)') + '\n音频大小: ' + buf.byteLength + ' bytes';
+      }
+
+      setTtsStatus('ok', 'HTTP ' + res.status + ' · 合成成功');
+      $ttsBody.innerHTML =
+        '<audio controls autoplay src="' + escapeHtml(audioSrc) + '"></audio>' +
+        '<details><summary>查看返回信息</summary><pre class="raw">' +
+        escapeHtml(rawInfo.slice(0, 4000)) + '</pre></details>';
+
+    } catch (err) {
+      const ms = Math.round(performance.now() - t0);
+      $ttsMs.textContent = ms + ' ms';
+      setTtsStatus('error', '请求异常');
+      $ttsBody.innerHTML =
+        '<div class="err">' + escapeHtml((err && err.message) || String(err)) + '</div>' +
+        '<div class="hint">常见原因：地址填写错误、网络不通、浏览器 CORS 跨域限制、API Key 无效。</div>';
+    } finally {
+      $ttsRun.disabled = false;
+      $ttsRun.textContent = '合成并试听';
+    }
+  }
+
+  $ttsRun.addEventListener('click', runTtsTest);
+
+  bindStore();
+
+  setSeg($chatProtocol, chatProtocolValue);
+  applyChatPreset(chatProtocolValue);
+
+  setSeg($ttsProtocol, ttsProtocolValue);
+  applyTtsProtocolUI(ttsProtocolValue);
+
+  if (!location.hash) location.hash = '#/';
+  applyRoute();
+
+  window.addEventListener('beforeunload', releaseAudio);
+})();
+    </script>
+</body>
+</html>
